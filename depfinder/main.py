@@ -80,6 +80,11 @@ else:
 
 namespace_packages = {pkg['import_name'] for pkg in mapping_list if '.' in pkg['import_name']}
 
+pkg_name_mapping = {}
+for pkg in mapping_list:
+   if pkg['import_name'] != pkg['conda_name']:
+       pkg_name_mapping[pkg['import_name']] = pkg['conda_name']
+
 def get_top_level_import_name(name):
     if name in namespace_packages:
         return name
@@ -469,7 +474,7 @@ def sanitize_deps(deps_dict):
                              "find the dependencies for. Set the `--no-remap` "
                              "cli flag if you want to disable this.".format(pkg))
                 continue
-            pkg_to_add = pkg_data['_PACKAGE_MAPPING'].get(pkg, pkg)
+            pkg_to_add = pkg_name_mapping.get(pkg, pkg)
             if pkg != pkg_to_add:
                 logger.debug("Renaming {} to {}".format(pkg, pkg_to_add))
             new_deps_dict[k].add(pkg_to_add)
